@@ -20,8 +20,19 @@
 #include "SubJets.h"
 #include "SubJetsAna2D.h"
 
-void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All", TString tTagger="All", bool WeightTracks = false, TString TrigType = "2016", TString period = "9p2invfb", bool runCondor=false)  //period is used to choose PU reweight file
+void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All", TString tTagger="All", bool WeightTracks = false, TString TrigType = "Moriond17", TString period = "9p2invfb", bool runCondor=false)  //period is used to choose PU reweight file
 {
+
+ cout << "\n Input setting: " ;
+ cout << "\n Data:          " << isData ;
+ cout << "\n Sample_pt:     " << samplePt ;
+ cout << "\n Trigger:       " << tTrigger ;
+ cout << "\n Tagger:        " << tTagger ;
+ cout << "\n Weight track:  " << WeightTracks ;
+ cout << "\n TrigType:      " << TrigType ;
+ cout << "\n Period:        " << period ;
+ cout << "\n Run on condor: " << runCondor ;
+ 
 
  bool useInputFileList = false ;
  if (samplePt.Contains(".txt")) useInputFileList = true ; 
@@ -36,15 +47,15 @@ void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All",
   Cuts.push_back("cMVAv2");
 
 // -- General directory where we can find the NTUPLES
-  TString ntDir="FileLists"; //in effect when not using file list as input
+  TString ntDir="FileLists_Moriond17"; //in effect when not using file list as input
 // -- General directory for the outputs.
-  TString oDir = "/uscmst1b_scratch/lpc1/lpctrig/duong/BTagAnalyzer/Output/";
+  TString oDir = "/uscmst1b_scratch/lpc1/lpctrig/duong/BTagAnalyzer/Output_Moriond17/";
   if (runCondor) oDir = "./" ;
 
   TString iDir = "MC/";  // First the CMSSW version, then below the full path.
 //          iDir       += "QCD_TuneCUETP8M1_13TeV_pythia8_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12/";
 //  iDir += "QCD_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_RunIIFall15MiniAODv1-PU25nsData2015v1_76X_mcRun2_asymptotic_v12/" ;
-  iDir += "QCD" ;
+  iDir += "QCD/" ;
   if (isData) iDir = "Data/JetHT/" ;   
 
 //FIXME
@@ -53,9 +64,9 @@ void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All",
 //  TString weightPthat_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12.weightPthat";
   TString weightPU_file    = "QCD_TuneCUETP8M1_13TeV_pythia8_RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_300_2400_9p2invfb_nPV.weightPU" ; //9.2invfb
   if (period == "7p7invfb") weightPU_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_300_2400_7p7invfb_nPV.weightPU" ;
-  if (period == "7p7to9p2invfb") weightPU_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_300_2400_7p7to9p2invfb_nPV.weightPU" ;
+  if (period == "7p7to9p2invfb" || period == "Moriond17") weightPU_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_300_2400_7p7to9p2invfb_nPV.weightPU" ;
   
-  TString weightPthat_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunII_new.weightPthat" ;
+  TString weightPthat_file = "QCD_TuneCUETP8M1_13TeV_pythia8_RunII_Moriond17.weightPthat" ;
   TString JSONFile = "one";
   
   if (isData) {
@@ -64,33 +75,40 @@ void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All",
   }
 
   vector<TString> PthatRanges;
+  if (samplePt == "All" || samplePt == "170to300")  PthatRanges.push_back("/Pt-170to300_all/");
   if (samplePt == "All" || samplePt == "300to470")  PthatRanges.push_back("/Pt-300to470/");
-  if (samplePt == "All" || samplePt == "470to600") PthatRanges.push_back("/Pt-470to600_all/");
+  if (samplePt == "All" || samplePt == "470to600") PthatRanges.push_back("/Pt-470to600/");
   if (samplePt == "All" || samplePt == "600to800")  PthatRanges.push_back("/Pt-600to800_all/");
-  if (samplePt == "All" || samplePt == "800to1000") PthatRanges.push_back("/Pt-800to1000/");
-  if (samplePt == "All" || samplePt == "1000to1400") PthatRanges.push_back("/Pt-1000to1400/");
-  if (samplePt == "All" || samplePt == "1400to1800") PthatRanges.push_back("/Pt-1400to1800/");
-  if (samplePt == "All" || samplePt == "1800to2400") PthatRanges.push_back("/Pt-1800to2400/");
-  if (samplePt == "All" || samplePt == "2400to3200")  PthatRanges.push_back("/Pt-2400to3200/");
+  if (samplePt == "All" || samplePt == "800to1000") PthatRanges.push_back("/Pt-800to1000_all/");
+  if (samplePt == "All" || samplePt == "1000to1400") PthatRanges.push_back("/Pt-1000to1400_all/");
+  if (samplePt == "All" || samplePt == "1400to1800") PthatRanges.push_back("/Pt-1400to1800_all/");
+  if (samplePt == "All" || samplePt == "1800to2400") PthatRanges.push_back("/Pt-1800to2400_all/");
+  if (samplePt == "All" || samplePt == "2400to3200")  PthatRanges.push_back("/Pt-2400to3200_all/");
   //if (samplePt == "All" || samplePt == "3200toInf")  PthatRanges.push_back("/Pt-3200toInf/");
 
  /////////////for data PthatRanges is used as looping over data set period///////////////
 //FIXME  
   if (isData) {
     PthatRanges.clear() ;
-    if (samplePt == "All" || samplePt == "Run2016B-PromptReco-v2_June22") PthatRanges.push_back("/Run2016B-PromptReco-v2_June22/") ;
-  //  if (samplePt == "All" || samplePt == "Run2015D-16Dec2015-v1") PthatRanges.push_back("/Run2015D-16Dec2015-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016B_23Sep2016-v3") PthatRanges.push_back("/JetHT_Run2016B_23Sep2016-v3/") ;
+    if (samplePt == "All" || samplePt == "Run2016C_23Sep2016-v1") PthatRanges.push_back("/JetHT_Run2016C_23Sep2016-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016D_23Sep2016-v1") PthatRanges.push_back("/JetHT_Run2016D_23Sep2016-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016E_23Sep2016-v1") PthatRanges.push_back("/JetHT_Run2016E_23Sep2016-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016F_23Sep2016-v1") PthatRanges.push_back("/JetHT_Run2016F_23Sep2016-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016G_23Sep2016-v1") PthatRanges.push_back("/JetHT_Run2016G_23Sep2016-v1/") ;
+    if (samplePt == "All" || samplePt == "Run2016H_PromptReco-v2") PthatRanges.push_back("/JetHT_Run2016H_PromptReco-v2/") ;
+    if (samplePt == "All" || samplePt == "Run2016H_PromptReco-v3") PthatRanges.push_back("/JetHT_Run2016H_PromptReco-v3/") ;
   } 
 
   bool truePU = false;
 
   float maxCutJetPtMax = 1000000.;
   
-  int TrigVal_12[3] =      {  0,   400, 500 }; //500 will not use trigger prescale 
-  TString STrigVal_12[3] = { "0", "400", "500"};
-  float TrigCut_12[3] =    {  0.,  450., 550.}; //not using trigger still use fatJet pT > 400 as minimum cut
+  int TrigVal_12[5] =      {  0, 260, 320, 400, 500 }; //500 will not use trigger prescale 
+  TString STrigVal_12[5] = { "0", "260", "320", "400", "500"};
+  float TrigCut_12[5] =    {  0., 300, 360, 450., 550.}; //not using trigger still use fatJet pT > 400 as minimum cut
 
-  int NTriggers = 3;
+  int NTriggers = 5 ;
   int *TrigVal = TrigVal_12;
   TString *STrigVal = STrigVal_12;
   float *TrigCut = TrigCut_12;
@@ -226,7 +244,7 @@ void Run2DSub(bool isData=false, TString samplePt="All", TString tTrigger="All",
           cout << weightPU_file << "\t" << weightPthat_file << "\t" << truePU << endl;
           //
           //TEMP change to pt cut of 30
-          t->Loop(FJt, Cuts.at(iCut),30.,1000.,
+          t->Loop(FJt, Cuts.at(iCut),20.,1000.,
              0., TrigVal[iTrig], TrigCut[iTrig], maxCutJetPtMax, oFile,
              weightPU_file, weightPthat_file, JSONFile, truePU, WeightTracks, TrigType, period);
           //
