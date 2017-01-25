@@ -350,15 +350,21 @@ TString TagLevel[3] = {"L", "M", "T" };
   }
   else if( TagName == "CSVv2" )
   {
-    TagCut[0] = .460;
-    TagCut[1] = .800;
-    TagCut[2] = .935;
+    //TagCut[0] = .460;
+    //TagCut[1] = .800;
+    //TagCut[2] = .935;
+    TagCut[0] = .5426;
+    TagCut[1] = .8484;
+    TagCut[2] = .9535;
   }
   else if( TagName == "cMVAv2" )
   {
-    TagCut[0] = -0.715;
-    TagCut[1] =  0.185;
-    TagCut[2] =  0.875;
+    //TagCut[0] = -0.715;
+    //TagCut[1] =  0.185;
+    //TagCut[2] =  0.875;
+    TagCut[0] = -0.5884;
+    TagCut[1] =  0.4432;
+    TagCut[2] =  0.9432;
   }
   else
   {
@@ -395,6 +401,7 @@ TString TagLevel[3] = {"L", "M", "T" };
   int Year = 2011;
   if( TrigType == "2011" ) Year = 2011;
   else if( TrigType == "2016" || TrigType == "2015" || TrigType == "2012" ||  TrigType == "2015_Cert" || TrigType == "2015_LooserSel") Year = 2012;
+  else if(TrigType == "Moriond17") Year = 2016 ;
   //TEMP ignore trigger use jet pT cut
   else if( TrigType == "ignore") Year = 0 ;
   else
@@ -441,7 +448,9 @@ TString TagLevel[3] = {"L", "M", "T" };
   TH1F* hAfterTrig150_MaxJetPt       = new TH1F("hAfterTrig150_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig190_MaxJetPt       = new TH1F("hAfterTrig190_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig240_MaxJetPt       = new TH1F("hAfterTrig240_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
+  TH1F* hAfterTrig260_MaxJetPt       = new TH1F("hAfterTrig260_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig300_MaxJetPt       = new TH1F("hAfterTrig300_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
+  TH1F* hAfterTrig320_MaxJetPt       = new TH1F("hAfterTrig320_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig370_MaxJetPt       = new TH1F("hAfterTrig370_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig400_MaxJetPt       = new TH1F("hAfterTrig400_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
   TH1F* hAfterTrig500_MaxJetPt       = new TH1F("hAfterTrig500_MaxJetPt","pt(jet)",NPtBin, minPtBin, maxPtBin);
@@ -1542,7 +1551,7 @@ TH1F *h = new TH1F("h","test",17,csvbins);
 
     if (period == "7p7to9p2invfb" && Run <= 276097) {
       //TEMP check period choice
-      //cout << "\n =================> Run > 276097" << endl ;
+      //cout << "\n =================> Debug: Period == 7p7to9p2invfb and Run <= 276097 skip event " << endl ;
       continue ; 
     }
     
@@ -1570,7 +1579,10 @@ TH1F *h = new TH1F("h","test",17,csvbins);
             }
           }
         }
-        if( notInRange ) continue; 		// Go to next event
+        if( notInRange ) {
+          //cout << "\n===============> Debug: Do JSON check, not in range, event skipped" ;
+          continue; 		// Go to next event
+        }
       }
 
       // RunII Certification: 7.3 pb-1 certifiés
@@ -1956,6 +1968,99 @@ TH1F *h = new TH1F("h","test",17,csvbins);
         
       }
 
+      //////////////////////////////////////////////////////
+      
+      if ( Year == 2016 ) {
+
+        triggerIdx = 0;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet40  = true;
+   
+        triggerIdx = 1;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet60  = true;
+        
+        triggerIdx = 2;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet80  = true;
+   
+        triggerIdx = 3;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet140 = true;
+   
+        triggerIdx = 4;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet200 = true;
+ 
+        triggerIdx = 5;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) {
+          Jet260 = true;
+          hAfterTrig260_MaxJetPt->Fill(FJ->FatJetInfo_Jet_pt[0],ww0) ;
+        }
+
+        triggerIdx = 6;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) {
+          Jet320 = true;
+          hAfterTrig320_MaxJetPt->Fill(FJ->FatJetInfo_Jet_pt[0],ww0) ;
+        }
+   
+        triggerIdx = 7;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) {
+          Jet400 = true;
+          hAfterTrig400_MaxJetPt->Fill(FJ->FatJetInfo_Jet_pt[0],ww0) ;
+        }
+
+        triggerIdx = 8;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) Jet450 = true;
+
+        triggerIdx = 9;
+        bitIdx = int(triggerIdx/32);
+        if ( BitTrigger[bitIdx] & ( 1 << (triggerIdx - bitIdx*32) ) ) {
+          Jet500 = true;
+          hAfterTrig500_MaxJetPt->Fill(FJ->FatJetInfo_Jet_pt[0],ww0) ;
+        }
+
+        for (int ijet = 0; ijet < FJ->FatJetInfo_nJet; ijet++) {
+          float residual = 1.;
+          float ptjet = FJ->FatJetInfo_Jet_pt[ijet] * residual;
+          float etajet = fabs(FJ->FatJetInfo_Jet_eta[ijet]);
+          float maxJetEta = 2.4 ;
+          if ( ptjet >  50. && etajet < maxJetEta) njet40++;
+          if ( ptjet >  70. && etajet < maxJetEta) njet60++;
+          if ( ptjet > 100. && etajet < maxJetEta) njet80++;
+          if ( ptjet > 160. && etajet < maxJetEta) njet140++;
+          if ( ptjet > 220. && etajet < maxJetEta) njet200++;
+          if ( ptjet > 300. && etajet < maxJetEta) njet260++;
+          if ( ptjet > 360. && etajet < maxJetEta) njet320++;
+          //TEMP
+          //if ( ptjet > 420. && etajet < maxJetEta) njet400++;
+          //if ( ptjet > 470. && etajet < maxJetEta) njet450++;
+          //if ( ptjet > 520. && etajet < maxJetEta) njet500++;
+          if ( ptjet > 450. && etajet < maxJetEta) njet400++;
+          if ( ptjet > 500. && etajet < maxJetEta) njet450++;
+          if ( ptjet > 550. && etajet < maxJetEta) njet500++;
+        }
+
+        if ( njet40  < 1 ) Jet40  = false;
+        if ( njet60  < 1 ) Jet60  = false;
+        if ( njet80  < 1 ) Jet80  = false;
+        if ( njet140 < 1 ) Jet140 = false;
+        if ( njet200 < 1 ) Jet200 = false;
+        if ( njet260 < 1 ) Jet260 = false;
+        if ( njet320 < 1 ) Jet320 = false;
+        if ( njet400 < 1 ) Jet400 = false;
+        if ( njet450 < 1 ) Jet450 = false;
+        if ( njet500 < 1 ) Jet500 = false;
+        
+      }
+
+
+      //////////////////////////////////////////////////////
+
       //TEMP bypass trigger, select event based on number of jet passing certain threshold
       if (Year == 0) {
         Jet40  = false;
@@ -2066,12 +2171,27 @@ TH1F *h = new TH1F("h","test",17,csvbins);
       if ( IntCut == 190 && !Jet190 ) continue;
       if ( IntCut == 200 && !Jet200 ) continue;
       if ( IntCut == 240 && !Jet240 ) continue;
-      if ( IntCut == 260 && !Jet260 ) continue;
-      if ( IntCut == 300 && !Jet300 ) continue;
-      if ( IntCut == 320 && !Jet320 ) continue;
-      if ( IntCut == 400 && !Jet400 ) continue;
+      if ( IntCut == 260 && !Jet260 ) {
+        //cout << "\n =========> Debug: Fail 260 trigger, event skipped" ;
+        continue;
+      }
+      if ( IntCut == 300 && !Jet300 ) {
+        //cout << "\n =========> Debug: Fail 300 trigger, event skipped" ;
+        continue;
+      }
+      if ( IntCut == 320 && !Jet320 ) {
+        //cout << "\n =========> Debug: Fail 320 trigger, event skipped" ;
+        continue;
+      }
+      if ( IntCut == 400 && !Jet400 ) {
+        //cout << "\n =========> Debug: Fail 400 trigger, event skipped" ;
+        continue;
+      }
       if ( IntCut == 450 && !Jet450 ) continue;
-      if ( IntCut == 500 && !Jet500 ) continue;
+      if ( IntCut == 500 && !Jet500 ) {
+        //cout << "\n =========> Debug: Fail 500 trigger, event skipped" ;
+        continue;
+      }
       if ( IntCut == 1 && Year == 2011
            && !Jet30 && !Jet60 && !Jet80 && !Jet110 && !Jet150 
                      && !Jet190 && !Jet240 && !Jet300 ) continue;
@@ -2129,6 +2249,7 @@ TH1F *h = new TH1F("h","test",17,csvbins);
         hData_JetPtBinned_nPV[iPt]->Fill( npv , ww0 );
       }
     }
+
     hData_nPV->Fill( npv , ww );		// pthat and PU reweighted and trigger scale for data
     hAllFlav_All_nPU->Fill( npu , ww0 );
     hAllFlav_nPU->Fill( npu , ww ); //change from nPU to npu
